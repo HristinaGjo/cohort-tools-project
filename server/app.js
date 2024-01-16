@@ -1,6 +1,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const cohorts = require ('./cohorts.json')
+const students = require ('./students.json')
 const PORT = 5005;
 
 // STATIC DATA
@@ -10,10 +12,6 @@ const PORT = 5005;
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
-
-
-
-
 
 
 // MIDDLEWARE
@@ -32,6 +30,15 @@ app.use(cookieParser());
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
+
+app.get('/api/cohorts', (request, response) => {
+  response.json(cohorts)
+});
+
+app.get('/api/students', (request, response) => {
+  response.json(students)
+});
+
 
 
 // START SERVER
