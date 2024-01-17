@@ -13,7 +13,10 @@ const studentsSchema = new Schema({
   program: {type: String, required:true},
   background: {type:String,required:true},
   image: {type:String, required:true},
-  cohort: {type:Number, required:true},
+  cohort: {
+    type: mongoose.Schema.Types.ObjectId,  
+    ref: 'Cohorts', 
+    required: true,},
   projects: {type:Array,required:true}
 });
 

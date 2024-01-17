@@ -44,7 +44,7 @@ app.get('/api/students/static', (request, response) => {
   response.json(students)
 }); 
 
-app.get('/api/students', async (request, response) => {
+/* app.get('/api/students', async (request, response) => {
   try {
     // Fetch all students from the database
     const allStudents = await Student.find({});
@@ -54,8 +54,18 @@ app.get('/api/students', async (request, response) => {
     console.error("Error fetching students from database", error);
     response.status(500).json({ error, message: 'Something went wrong while fetching students' });
   }
-});
+}); */
 
+
+app.get('/api/students', async (request, response) => {
+  try {
+    const allStudents = await Student.find().populate('cohort');
+    response.json(allStudents);
+  } catch (error) {
+    console.error("Error fetching students from database", error);
+    response.status(500).json({ error, message: 'Something went wrong while fetching students' });
+  }
+});
 
 app.post('/api/students', async (request, response) => {
   console.log(request.body)
@@ -74,17 +84,43 @@ app.post('/api/students', async (request, response) => {
 })
 
 
-app.get('/api/students/cohort/:cohortId', async (request, response) => {
+/* app.get('/api/students/cohort/:cohortId', async (request, response) => {
+
   const { cohortId } = request.params
   const oneCohort=await Cohort.findById(cohortId)
   response.json(oneCohort)
+}); */
+
+app.get('/api/students/cohort/:cohortId', async (request, response) => {
+  const { cohortId } = request.params;
+  try {
+    const studentsInCohort = await Student.find({ cohort: cohortId }).populate('cohort');
+    response.json(studentsInCohort);
+  } catch (error) {
+    console.error("Error fetching students from database", error);
+    response.status(500).json({ error, message: 'Something went wrong while fetching students in cohort' });
+  }
 });
 
-app.get('/api/students/:studentId', async (request, response) => {
+
+/* app.get('/api/students/:studentId', async (request, response) => {
   const { studentId } = request.params
   const oneStudent=await Student.findById(studentId)
   response.json(oneStudent)
 });
+ */
+
+app.get('/api/students/:studentId', async (request, response) => {
+  const { studentId } = request.params;
+  try {
+    const oneStudent = await Student.findById(studentId).populate('cohort');
+    response.json(oneStudent);
+  } catch (error) {
+    console.error("Error fetching student from database", error);
+    response.status(500).json({ error, message: 'Something went wrong while fetching student' });
+  }
+});
+
 
 app.put('/api/students/:studentId', async (request, response) => {
   console.log(request.body)
