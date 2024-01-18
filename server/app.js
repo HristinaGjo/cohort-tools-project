@@ -32,7 +32,14 @@ app.get('/api/students/static', (request, response) => {
   response.json(students)
 }); 
 
-app.get('/api/students', async (request, response) => {
+const studentRoutes= require('./routes/students.js')
+const cohortsRoutes= require('./routes/cohorts.js')
+
+app.use('/api/students', studentRoutes)
+app.use('/api/cohorts', cohortsRoutes)
+
+
+/* app.get('/api/students', async (request, response) => {
   try {
     const allStudents = await Student.find().populate('cohort');
     response.json(allStudents);
@@ -101,13 +108,13 @@ app.delete("/api/students/:studentId", async (req, res) => {
     console.log(error)
     res.status(500).json(error)
   }
-});
+}); */
 
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
 
-//Cohort Routes
+/* //Cohort Routes
 app.get('/api/cohorts/static', (request, response) => {
   response.json(cohorts)
 });
@@ -164,7 +171,7 @@ app.delete("/api/cohorts/:cohortId", async (req, res) => {
     console.log(error)
     res.status(500).json(error)
   }
-});
+}); */
 
 app.use(errorHandler);
 app.use(notFoundHandler);
