@@ -1,11 +1,11 @@
 const express = require("express");
+const { errorHandler, notFoundHandler } = require("./middleware/error-handling");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cohorts = require ('./cohorts.json');
 const students = require ('./students.json');
 const Cohort = require ('./models/Cohorts.model')
 const Student = require ('./models/Students.model')
-
 const mongoose = require('mongoose')
 
 const PORT = 5005;
@@ -24,9 +24,6 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-
-
 
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Check Mongoose connection
@@ -56,7 +53,6 @@ app.get('/api/students/static', (request, response) => {
   }
 }); */
 
-
 app.get('/api/students', async (request, response) => {
   try {
     const allStudents = await Student.find().populate('cohort');
@@ -82,7 +78,6 @@ app.post('/api/students', async (request, response) => {
     }
   }
 })
-
 
 /* app.get('/api/students/cohort/:cohortId', async (request, response) => {
 
@@ -144,11 +139,9 @@ app.delete("/api/students/:studentId", (req, res) => {
     });
 });
 
-
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
-
 
 //Cohort Routes
 app.get('/api/cohorts/static', (request, response) => {
@@ -211,11 +204,12 @@ app.delete("/api/cohorts/:cohortId", (req, res) => {
     });
 });
 
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 // START SERVER
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
 
 
