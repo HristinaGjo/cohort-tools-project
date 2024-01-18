@@ -1,7 +1,8 @@
-const express = require("express");
-const { errorHandler, notFoundHandler } = require("./middleware/error-handling");
-const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
+const express = require('express');
+const { errorHandler, notFoundHandler } = require('./middleware/error-handling');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
+const cors = require("cors");
 const cohorts = require ('./cohorts.json');
 const students = require ('./students.json');
 const Cohort = require ('./models/Cohorts.model')
@@ -10,23 +11,14 @@ const mongoose = require('mongoose')
 
 const PORT = 5005;
 
-// STATIC DATA
-// Devs Team - Import the provided files with JSON data of students and cohorts here:
-// ...
-// INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
 
-// MIDDLEWARE
-// Research Team - Set up CORS middleware here:
-// ...
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-// ROUTES - https://expressjs.com/en/starter/basic-routing.html
-// Check Mongoose connection
+app.use(cors());
 
 const MONGODB_URI = "mongodb://127.0.0.1:27017/cohort-tools-api";
 
@@ -35,23 +27,10 @@ mongoose
   .then((x) => console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`))
   .catch((err) => console.error("Error connecting to mongo", err));
 
-
 // Student Routes
 app.get('/api/students/static', (request, response) => {
   response.json(students)
 }); 
-
-/* app.get('/api/students', async (request, response) => {
-  try {
-    // Fetch all students from the database
-    const allStudents = await Student.find({});
-    // Return the students data
-    response.json(allStudents);
-  } catch (error) {
-    console.error("Error fetching students from database", error);
-    response.status(500).json({ error, message: 'Something went wrong while fetching students' });
-  }
-}); */
 
 app.get('/api/students', async (request, response) => {
   try {
@@ -79,13 +58,6 @@ app.post('/api/students', async (request, response) => {
   }
 })
 
-/* app.get('/api/students/cohort/:cohortId', async (request, response) => {
-
-  const { cohortId } = request.params
-  const oneCohort=await Cohort.findById(cohortId)
-  response.json(oneCohort)
-}); */
-
 app.get('/api/students/cohort/:cohortId', async (request, response) => {
   const { cohortId } = request.params;
   try {
@@ -97,25 +69,16 @@ app.get('/api/students/cohort/:cohortId', async (request, response) => {
   }
 });
 
-
-/* app.get('/api/students/:studentId', async (request, response) => {
-  const { studentId } = request.params
-  const oneStudent=await Student.findById(studentId)
-  response.json(oneStudent)
-});
- */
-
 app.get('/api/students/:studentId', async (request, response) => {
   const { studentId } = request.params;
   try {
     const oneStudent = await Student.findById(studentId).populate('cohort');
     response.json(oneStudent);
   } catch (error) {
-    console.error("Error fetching student from database", error);
-    response.status(500).json({ error, message: 'Something went wrong while fetching student' });
+      console.error("Error fetching student from database", error);
+      response.status(500).json({ error, message: 'Something went wrong while fetching student' });
   }
 });
-
 
 app.put('/api/students/:studentId', async (request, response) => {
   console.log(request.body)
@@ -129,14 +92,15 @@ app.put('/api/students/:studentId', async (request, response) => {
   }
 });
 
-app.delete("/api/students/:studentId", (req, res) => {
-  Student.findByIdAndDelete(req.params.studentId)
-    .then(() => {
-      res.status(204).send();
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Error while deliting a single recipe" });
-    });
+app.delete("/api/students/:studentId", async (req, res) => {
+  try {
+    await Student.findByIdAndDelete(req.params.studentId)
+    res.status(204).json({message: 'The student was removed from the DB'})
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(error)
+  }
 });
 
 app.get("/docs", (req, res) => {
@@ -150,9 +114,7 @@ app.get('/api/cohorts/static', (request, response) => {
 
 app.get('/api/cohorts', async (request, response) => {
   try {
-    // Fetch all students from the database
     const allCohorts = await Cohort.find({});
-    // Return the students data
     response.json(allCohorts);
   } catch (error) {
     console.error("Error fetching students from database", error);
@@ -178,7 +140,7 @@ app.post('/api/cohorts', async (request, response) => {
 
 app.get('/api/cohorts/:cohortId', async (request, response) => {
   const { cohortId } = request.params
-  const oneCohort=await Cohort.findById(cohortId)
+  const oneCohort = await Cohort.findById(cohortId)
   response.json(oneCohort)
 });
 
@@ -194,14 +156,14 @@ app.put('/api/cohorts/:cohortId', async (request, response) => {
   }
 });
 
-app.delete("/api/cohorts/:cohortId", (req, res) => {
-  Cohort.findByIdAndDelete(req.params.cohortId)
-    .then(() => {
-      res.status(204).send();
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Error while deliting a single recipe" });
-    });
+app.delete("/api/cohorts/:cohortId", async (req, res) => {
+  try {
+    await Cohort.findByIdAndDelete(req.params.cohortId)
+    res.status(204).json({message: 'The cohort was removed form the DB'})
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(error)
+  }
 });
 
 app.use(errorHandler);
