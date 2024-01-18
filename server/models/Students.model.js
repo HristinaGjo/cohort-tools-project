@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-
-// CREATE A SCHEMA
 const studentsSchema = new Schema({
   firstName: { type:String, required:true},
   lastName: { type: String, required:true },
@@ -20,10 +18,8 @@ const studentsSchema = new Schema({
   projects: {type:Array,required:true}
 });
 
-// CREATE A MODEL
 const Students = mongoose.model("Students", studentsSchema);
 
-// EXPORT THE MODEL
 module.exports = Students;
 
 

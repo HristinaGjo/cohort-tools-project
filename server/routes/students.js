@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../models/Students.model');
 
-// Student Routes
 router.get('/static', (request, response) => {
   response.json(students);
 });
