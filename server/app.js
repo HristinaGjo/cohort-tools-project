@@ -31,8 +31,12 @@ app.get('/api/students/static', (request, response) => {
 
 const studentRoutes= require('./routes/students.js')
 const cohortsRoutes= require('./routes/cohorts.js')
+const authRoutes = require('./routes/auth.routes.js')
+
 app.use('/api/students', studentRoutes)
 app.use('/api/cohorts', cohortsRoutes)
+//check if it works with api !!!
+app.use('/api/auth', authRoutes)
 
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
