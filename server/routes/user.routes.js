@@ -1,12 +1,10 @@
-const jwt = require('jsonwebtoken')
 const User = require('../models/User.model')
-const bcrypt = require('bcryptjs')
 const router = require('express').Router()
-const { isAuthenticated, isAdmin } = require('../middleware/route-guard.middleware')
+const { isAuthenticated } = require('../middleware/route-guard.middleware')
 
 
 
-router.get('/users/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     const { id } = req.params;
     console.log("Requested user ID:", id);
 
@@ -20,6 +18,11 @@ router.get('/users/:id', async (req, res) => {
     }
 });
 
+/* router.get('/:id', isAuthenticated, async(req,res)=>{
+    console.log(req.tokenPayload)
+    const currentUser = await User.findById(req.tokenPayload.userId)
+    res.status(200).json(currentUser)
+})*/
 
 
 module.exports = router
