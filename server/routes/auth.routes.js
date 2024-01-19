@@ -65,6 +65,7 @@ router.get('/verify', isAuthenticated, isAdmin, async(req,res)=>{
     res.status(200).json(currentUser)
 })
 
+
 module.exports = router
 
 
