@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/User.model')
 const bcrypt = require('bcryptjs')
 const router = require('express').Router()
-const { isAuthenticated } = require('../middleware/route-guard.middleware')
+const { isAuthenticated, isAdmin } = require('../middleware/route-guard.middleware')
 
 const SALT_ROUNDS = 13
 
@@ -35,13 +35,13 @@ router.post('/login', async(req, res) => {
                 //token generation
                 const authToken = jwt.sign({
                 //If the password is correct, it generates a JSON Web Token (JWT) 
-                    userId: potentialUser._id,
+                userId: potentialUser._id
                 },
                 //the token is signed using a secret key (
                 process.env.TOKEN_SECRET,
                     {
                 // widely used algorithm for JWTs.
-                        algorithm: 'HS256',
+                       algorithm: 'HS256',
                 //valid for 6 hours
                         expiresIn: '6h',
                     }
@@ -59,7 +59,7 @@ router.post('/login', async(req, res) => {
     }
 })
 
-router.get('/verify', isAuthenticated, async(req,res)=>{
+router.get('/verify', isAuthenticated, isAdmin, async(req,res)=>{
     console.log(req.tokenPayload)
     const currentUser = await User.findById(req.tokenPayload.userId)
     res.status(200).json(currentUser)

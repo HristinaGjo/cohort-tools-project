@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express');
 const { errorHandler, notFoundHandler } = require('./middleware/error-handling');
 const morgan = require('morgan');
