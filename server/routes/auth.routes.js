@@ -22,6 +22,21 @@ router.post('/signup', async (req,res) => {
 
 })
 
+router.post('/login', async(req, res) => {
+    const payload = req.body
+    try {
+        const potentialUser = await User.findOne({ email: payload.email.toLowerCase().trim()})
+
+        if(potentialUser) {
+            if(bcrypt.compareSync(payload.password, potentialUser.passwordHash)) {
+              
+            }
+        }
+    } catch(error) {
+
+    }
+})
+
 
 
 module.exports = router
